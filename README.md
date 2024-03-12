@@ -30,6 +30,33 @@ In contrast, in real world use with big data projects, where primary requirement
 
 Obviously, the decision depends on specific requirements, the scale of deployments and the features most important regards different kinds of projects/works.
 
+## Understanding Docker and docker Compose
+
+Docker (https://www.docker.com/) is a platform for developing, shipping and running apploications is isolated environments called containers. Containers package up an application with all its dependencies. 
+
+Docker Compose is a tool for defining and running multi-container Docker appications. With Compose, it will used a YAML file to configure applications's services, networks and volumes. 
+
+### How to create a Docker Compose
+
+To define services, like Nextcloud and its database and their configurations, is needed to create a 'docker-compose.yml' file. Then, is needed to define Nextcloud service and Database service (Nextcloud requires a database to store user data). 
+
+### Running Docke Compose file
+
+Use the command line to navigate to the directory containing the 'docker-compose.yml', run:
+
+`docker-compose up`
+
+This command pulls the necessary Docker images and starts the services defined in your compose file. Once the containers are running, it's possible to access Nextcloud through web browser at, i.e., `http://localhost:8080`.
+
+### Monitoring and Managing
+
+To monitor logs, it's possible use 
+
+`docker logs`
+
+Also, it's possible to use Docker Compose to start, stop, and restart services. It's possible to keep an eye on resource usage (CPU, memory) with Docker's built-in tools (or, it's possible also with external tools like Portainer).
+
+
 ## Documentation, Code and Presentation
 
 In this repository, will be available: 
