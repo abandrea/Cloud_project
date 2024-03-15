@@ -170,3 +170,4 @@ General Maintenance tasks include:
 
 - **Horizontal Scaling**: This involves adding more servers to the existing infrastructure. This approach is more flexible and scalable, as it allows to distribute the load across multiple servers. This approach is often used in cloud environments, where it is possible to add or remove servers as needed.
 
+
