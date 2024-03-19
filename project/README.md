@@ -6,7 +6,7 @@ After choosing between Nextcloud and MinIO, it was planned the deployment on lap
 
 ### Install Docker and Docker-Compose
 
-First, it is necessary to install Docker and Docker-Compose. On MacOS, it is possible to install Docker Desktop, which includes Docker-Compose. (On Linux, it is possible to install Docker and Docker-Compose separately.)
+First, it is necessary to install Docker and Docker-Compose. On MacOS, it is possible to install Docker Desktop, which includes Docker-Compose. (On Linux, it is needed to install Docker and Docker-Compose separately.)
 
 To install Docker Desktop, it is necessary to download the installer from the official website: https://www.docker.com/products/docker-desktop
 
@@ -164,10 +164,437 @@ General Maintenance tasks include:
 
 ## Scalability Aspects
 
+What was done as far as deployment plan is just a starting point. As the number of users and the amount of data grows, it may be necessary to scale the deployment to handle the increased load. First of all, it is needed to analyse that there are two main approaches to scaling: horizontal and vertical scaling.
+
 ### Horizontal vs. Vertical Scaling
 
 - **Vertical Scaling**: This involves increasing the capacity and the power of the server by adding more resources (CPU, RAM, etc.) to the existing server. This is often done by upgrading the hardware of the server. This approach has its limitations, like physical and cost limits.
 
 - **Horizontal Scaling**: This involves adding more servers to the existing infrastructure. This approach is more flexible and scalable, as it allows to distribute the load across multiple servers. This approach is often used in cloud environments, where it is possible to add or remove servers as needed.
+
+The system should be capable of scaling out in horizontal scaling, which means adding more instances of the same service (like Nextcloud service) to handle increased load. It is possible to specify the number of replicas in the Docker-Compose file, but for the true horizontal scaling, it is typically done using an more robust orchestration tool like Kubernetes or Docker Swarm in a production environment.
+
+### Load Balancing
+
+When scaling out, it is important to consider how the traffic will be distributed across the different instances of the service. Load balancing is a technique used to distribute the incoming network traffic across a group of backend servers. This ensure that no single instance becomes a bottleneck. 
+
+### Database Scaling
+
+Since it is used MariaDB, it is possible to scale the database using techniques like replication or clustering to handle more significant amounts of data and requests.
+
+### Scalability Enhancements
+
+1.  **Service Replication**: Firstly, it was prepared 'nextcloud' for potential scaling. While Docker Compose itself isn't used for scaling in production, it was setting up to allows for an easier transition to tools like Docker Swarm or Kubernetes in the future. 
+2.  **Database Scaling**: While actual database scaling won't be configured in Docker Compose, it is important to design with this in mind.  
+
+So, this is the updated version of docker-compose.yml incorporating these considerations:
+
+```yaml
+
+version: '3.8'
+
+services:
+  nextcloud:
+    image: nextcloud
+    ports:
+      - "8080:80"
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=andf12
+    depends_on:
+      - db
+    deploy:
+      replicas: 1  # Placeholder for scalability, it can be adjusted as needed
+
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=andf12
+      - MYSQL_PASSWORD=andf12
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    volumes:
+      - db:/var/lib/mysql
+    deploy:
+      replicas: 1  # Placeholder for scalability, also it can be adjusted as needed
+
+volumes:
+  nextcloud:
+  db:
+
+```
+
+Notes: 
+
+- The `replicas` key under `deploy` are a placeholder for scalability and they are used to specify the number of replicas for the service, but serves here as a reminder that for future scaling considerations.
+
+- It was updated the version of the compose file to `3.8`, also if will decided to use Docker Swarm or Kubernetes in the future. 
+
+Also, it is possible to consider also Load Balancing and Caching Mechanisms to improve the performance and scalability of the system:
+
+```yaml
+
+version: '3.8'
+
+services:
+  nextcloud:
+    image: nextcloud
+    ports:
+      - "8080:80"
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=andf12
+    depends_on:
+      - db
+    ## Placeholder for scalability options in Swarm mode
+    deploy:
+      replicas: 1 # Change as needed for scaling
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=andf12
+      - MYSQL_PASSWORD=andf12
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    volumes:
+      - db:/var/lib/mysql
+    # Consider options for replication/clustering for scaling
+
+  ## Placeholder for a caching service like Redis
+  # redis:
+  #   image: redis
+
+  ## Placeholder for a load balancer (e.g., Nginx or HAProxy)
+  # load_balancer:
+  #   image: nginx
+
+volumes:
+  nextcloud:
+  db:
+
+## Placeholder for network configurations
+# networks:
+#   - backend
+
+```
+
+In this new version, it was included:
+
+- **Load Balancing**: it was introduce a load balancer service (Nginx) to distribute traffic accross multiple instances of Nextcloud. This will help in handling increased load.
+
+- **Caching Mechanisms**: it was introduce a caching service (Redis) to cache frequently accessed data and reduce the load on the database.
+
+
+## Security Enhancements
+
+Security is a critical aspect of any deployment, especially when it comes to handling sensitive data. It was analysed to address some security enhancements that can be made to the deployment plan, such as secure file storage and transmission, user authentication, and unauthorized access prevention. 
+
+**Implementing Secure File Storage and Tasmission** 
+
+It is important to ensure that files are stored and transmitted securely, especially when dealing with sensitive data. This can be achieved by configuring Nextcloud to use HTTPS for secure communication, and can be done by obtaining and installing an SSL/TLS certificate for NGINX (It is possible to use Let's Encrypt for a free certificate). 
+
+**Securing User Authentication**
+
+Nextcloud uses a username and password for user athentication, but by default, it is possible to enhance the security of admin/users authentication using settings, that are available in the Nextcloud admin settings. 
+Also, it is possible to enhance the security of user authentication by integrating OAuth2/OpenID Connect for single sign-on (SSO) and multi-factor authentication (MFA) for an extra layer of security.
+
+**Preventing Unauthorized Access**
+
+It is important to prevent unauthorized access to the Nextcloud service. This can be achieved by implementing a firewall to restrict access to the Nextcloud service, and by regularly reviewing and updating security settings to ensure that the system is secure. It is also possible to use a Web Application Firewall (WAF) to protect against common web application attacks.
+
+### Obtain an SSL Certificate
+
+**Using Let's Encrypt and Certbot (for production environments)**
+
+As mentioned, it is possible to use Let's Encrypt to obtain a free SSL certificate for the Nextcloud service. This can be done by installing Certbot, which is a tool for obtaining and renewing SSL/TLS certificates. Once Certbot is installed, is needed to run it to obtain a certificate for the domain. Certbot will automatically provide with two key files: the certificate file and a private key file.
+
+**Using a Self-Signed Certificate (for testing purpose)**
+
+It is possible to create a self-signed SSL certificate using OpenSSL, that can be done by running the following command:
+
+```bash
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+
+```
+
+This will create a self-signed SSL certificate and a private key file. The certificate will be valid for 365 days. The certificate file and the private key file can be used to configure NGINX to use HTTPS.
+
+### Update NGINX Configuration
+
+Once the SSL certificate is obtained, it is possible to update the NGINX configuration file to use HTTPS, just adding an HTTPS server block in the configuration file, specify the paths for the SSL certificate and private key files, and redirect HTTP traffic to HTTPS (that is optional, but recommended, as community says).
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name yourdomain.com;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    # Other NGINX configuration...
+}
+```
+
+### Adjust Docker-Compose File
+
+Then, after creating a directory (for example, `./nginx/ssl`) and placed the SSL certificate and key files, it is needed to adjust the Docker-Compose file to mount the SSL certificate and private key files into the NGINX container:
+
+```yaml
+
+# ...
+
+services:
+  load_balancer:
+    image: nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl  # Mounting SSL directory
+    # Rest of the configuration...
+
+    #...
+```
+
+After this step, it is possible to redeploy Docker environment using `docker-compose up -d`.
+
+### Ensuring Data Encryption 
+
+Nextcloud provides server-side encryption to protect data. To enable server-side encryption, it is possible to go to the Nextcloud admin settings, in "Security" section, and enable the "Server-side encryption" option. This will encrypt the data stored in Nextcloud, and it will provide an extra layer of security.
+
+After enabling encryption, it is important to ensure that the encryption keys are backed up and stored securely. Nextcloud will asks to log out and log back in to generate new encryption keys. 
+
+For these files that are already stored in Nextcloud before enabling encryption, it is needed to run a commando to encrypt them: `php occ encryption:encrypt-all`. 
+
+
+Enabling encryption is a critical step for ensuring the confidentiality of the data that are stored in the cloud. This enhancement, along with SSL/TLS for data in transit, greatly improves the overall security of the cloud system, and this is especially important when dealing with sensitive data, such as personal or financial information.
+
+### Other Security Enhancements
+
+It is also possible to consider other security enhancements, such integrating OAuth2/OpenID Connect and multi-factor authentication (MFA) for an extra layer of security. 
+
+**OAuth2/OpenID Connect**: This can be used to enable single sign-on (SSO) and to allow users to log in using their existing credentials from another service, such as Google or GitHub. This can simplify the login process for users and improve the overall security of the system. It can be done by installing and configuring an OAuth2/OpenID Connect provider, such as Keycloak or Okta, and integrating it with Nextcloud. 
+
+**Multi-Factor Authentication (MFA)**: This can be used to add an extra layer of security to the login process by requiring users to provide a second form of authentication, such as a code sent to their phone or a fingerprint scan. This can be done by installing and configuring an MFA provider, such as Google Authenticator or Duo, and integrating it with Nextcloud.
+
+Also, it is possible to consider using a Web Application Firewall (WAF) to protect against common web application attacks, such as SQL injection and cross-site scripting. A WAF can help to prevent unauthorized access to the Nextcloud service and to protect the system from common web application attacks.
+
+As said before, it is important to regularly review and update Nextcloud, MariaDB, and the Docker images. Regularly updating the software will help to ensure that the system is secure and that it is protected against known vulnerabilities. It is also important to regularly review user accounts and permissions to ensure that access levels are appropriate, and to monitor disk usage and performance to ensure that the system is running smoothly.
+
+## Cost Efficiency
+
+Cost efficiency is an important consideration when deploying a cloud system, especially when it comes to choosing the right infrastructure and services. It is important to consider the cost of the infrastructure, the cost of the services, and the cost of the maintenance and management of the system. 
+
+Actually, with these implementation, the cost of the infrastructure in relative low, as it is using Docker and Docker-Compose, which are open-source and free to use. The cost of the services will depend on the specific services that are used. The cost of the maintenance and management of the system will depend on the complexity of the system and the level of expertise required to manage it.
+
+### Cost Implication of the deployed system
+
+For the project, it was considered the optimization of the container resources by setting resource limits, also to prevents over-allocations and under-utilization of resources. Also, it was considered the managing of docker volumes and images, to prevent the accumulation of unused data and to reduce the storage costs. Other project-related costs are network costs, especially in the cloud environment. Beyond the specific use of the project, the optimisation of data transfer processes is important in order to minimise data input and output costs.
+
+### Cost Efficiency Enhancements
+
+It is possible to consider some cost efficiency enhancements, such as:
+
+- Optimization od Docker Images: it can be done using smaller base images to reduce the size and resource requirements of the containers, or regularly cleaning up unused images, containers, and volumes to freep up space and resources.
+- Scalability and Auto-Scaling: It is possible to implement auto-scaling where possible, to automatically adjust the number of instances based on the current load (so scaling up during high demand and down during low demand). This can help to reduce costs by only using the resources that are needed.
+- Monitoring and Cost Analysis: It is important to regularly monitor the system and to analyze the costs to identify areas where costs can be reduced. This can be done implementing monitoring tools to track resource usage and costs. 
+- Choosing the Right Services: It is important to choose the right services that meet the requirements of the system while minimizing costs. This can be done by comparing the costs of different services and choosing the ones that offer the best value for the money. 
+
+Implementing these cost efficiency enhancements can help ensure that the cloud systema remains economically sustainable, especially as it scales up to handle increased load and data.
+
+
+## Returning to the Deployment Plan
+
+The deployment plan was designed to deploy Nextcloud in a containerized environment using Docker and Docker-Compose. The plan included the installation of Docker and Docker-Compose, the creation of a Docker-Compose file to define the services, and the deployment of the services using Docker-Compose. The plan also included the initial setup of Nextcloud, the management and maintenance of the system, and the scalability aspects, it was considered security enhancements and cost efficiency.
+
+So, the deployment plan was designed to be flexible and scalable, and it was considered the possibility of scaling the deployment to handle increased load and data. It was also considered the security enhancements to ensure the confidentiality and integrity of the data, and the cost efficiency enhancements to ensure that the system remains economically sustainable.
+
+The deployment plan was designed to be a **starting point**, and it was considered the possibility of using more robust orchestration tools like Kubernetes or Docker Swarm in the future. It was also considered the possibility of integrating OAuth2/OpenID Connect and multi-factor authentication (MFA) for an extra layer of security, and the possibility of using a Web Application Firewall (WAF) to protect against common web application attacks.
+
+Actually, from the Docker Desktop setup, it was set up Resources and Advanced settings, and it was set up the Docker Desktop to use 4 CPUs and 8 GB of memory, with Swap of 1 GB (Swap means that if the system needs more memory resources and the RAM is full, inactive pages in memory are moved to the swap space), Virtual disk limit of 64 GB (Due to filesystem overhead, the real available space might be less).
+
+### Monitoring Tools
+
+By default, the Docker Desktop includes a built-in monitoring tool that provides information about the containers, images, networks, and volumes. It is also possible to use third-party monitoring tools, such as Prometheus and Grafana, to monitor the system and to analyze the performance and resource usage.
+
+**Prometheus and Grafana**
+
+Prometheus is an open-source monitoring and alerting toolkit that is designed for reliability and scalability. It is possible to use Prometheus to collect metrics from the Docker containers and to store them in a time-series database. Grafana is an open-source platform for monitoring and observability that is designed to visualize and analyze the metrics collected by Prometheus. It is possible to use Grafana to create dashboards and alerts to monitor the performance and resource usage of the system.
+
+Adding both Prometheus and Grafana to a Docker implementation involves setting up containers for both applications and ensuring they are configured to work together. 
+
+Firstly, it is needed to create a Docker Network that will allow the containers to communicate with each other:
+
+```bash
+
+docker network create monitoring
+
+```
+
+Then, it was created a file named `prometheus.yml` to configure it to scrape metrics:
+
+```yaml
+
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+```
+
+
+Run Prometheus in Docker:
+
+```bash
+docker run -d --name=prometheus -p 9090:9090 --network=monitoring -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+
+```
+This command runs Prometheus in a detached mode, names the containe `prometheus`, exposes it on port 9090 and mounts the config file into the container.
+
+Then, start Grafana:
+```bash
+docker run -d --name=grafana -p 3000:3000 --network=monitoring grafana/grafana
+```
+This command starts Grafana, names the container `grafana`, and exposes it on port 3000. 
+
+After this, it is possible to access Grafana at `http://localhost:3000` in a web browser and log in using the default credentials (admin/admin). Then, it is possible to add Prometheus as a data source and create dashboards to visualize and analyze the metrics collected by Prometheus.
+
+This is a basic setup, both Prometheus and Grafana offer a range of configurations and options to suit different requirements. Obviously, it is needed to ensure to secure Grafana and Prometheus instances, especially if they will be exposed to the internet. 
+
+In this project, it was integrated Prometheus and Grafana into docker-compose.yml file: 
+
+```yaml
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - your_network
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=your_password  # Change this!
+    ports:
+      - "3000:3000"
+    networks:
+      - your_network
+
+volumes:
+  grafana_data:
+
+networks:
+  your_network:
+    driver: bridge
+```
+
+This is a basic setup, and it is possible to add more advanced configurations and options to suit different requirements. 
+
+Nextcloud doesn't provide a Prometheus-compatible metrixs endopoint, so it is needed to use an additional plugin or exporter to collect metrics from Nextcloud. So, it was considered to use an exporter that can translate Nextcloud's status into Prometheus-readable metrics, simply by adding a new service to the docker-compose.yml file: 
+
+```yaml
+services: # ...
+# ...
+node_exporter:
+    image: prom/node-exporter
+    ports:
+      - "9100:9100"
+# ...
+```
+
+This will expose the node exporter on port 9100, and it will collect metrics from the host system and make them available to Prometheus. Then, was also updated prometheus.yml to include the new target:
+
+```yaml
+global: 
+# ...
+scarpe_configs:
+#...
+    - job_name: 'node'
+    static_configs:
+      - targets: ['node_exporter:9100']
+```
+
+From here, it is possible to access Prometheus at `http://localhost:9090` and Grafana at `http://localhost:3000` in a web browser. In Grafana it is possible to add Prometheus as a data source and create dashboards to visualize and analyze the metrics collected by Prometheus, from the panel configuration screen, using a query editor using PromQL (Prometheus Query Language) where is possible, for example, using `node_cpu_seconds_total` to see CPU usage. 
+
+Grafana, as said before, offers various type of visualization like graphs, table, heatmaps, and more, where they are customizable. Once the dashboard is created and saved, it is possible to share it with others, and it is possible to set up alerts to be notified when certain conditions are met.
+
+Grafana has extensive documentation and a large community, there are also pre-built dashboards, experiment with different visualizations. 
+
+In this project, it was created 3 dashboards:
+
+- **CPU Usage**: `node_cpu_seconds_total{mode="system"}`;
+- **Memory Usage**: `node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes`;
+- **Disk IO**: `rate(node_disk_io_time_seconds_total[2m])`.
+
+Obviously, is possible to adjust time ranges and other settings to suit specific requirements. After writing the query, Grafana will automatically execute it and display the results.
+
+
+## Stress Test - Testing the infrastructure
+
+For what concerns testing, it is possible to use a variety of tools and techniques to test the infrastructure. The test that was conducted was **load testing** and **performance testing**.
+
+The choice of tool often depends on the specific requirements of the test scenario (e.g. necessary protocols, level of realism, reporting capability), the budget (if available) and, of course, the skills of the owner/team.
+
+### Tools for testing 
+To do this test, there are several tools that can be used to conduct load testing:
+
+* **Apache JMeter**: Is a open-source tool designed for load testing and measuring performance. It's widely used for its versatility and can simulate heavy loads on servers, networks, or objects to test strength or analyse overall performance under different load types (https://jmeter.apache.org/). 
+
+* **LoadRunner (Micro Focus)**: Another widely used tool for performance testing, LoadRunner can simulate thousands of users concurrently, makit it ideal for complex applications. It supports a wide range of application environments, protocols and APIs (https://www.microfocus.com/en-us/products/loadrunner-professional/overview). There's a free trial available, but it's a paid tool.
+
+* **BlazeMeter (Acquired by Broadcom)**: A cloud-based load testing service compatible with Apache JMeter. It provides an easy-to-use interface for running JMeter tests at scale, and offers real-time reporting and analytics (https://www.blazemeter.com/). It's a paid tool, but there's a free trial available.
+
+* **Gatling**: An open-source load testing tool designed for an easy use. It's written in Scala and can be used to simulate heavy loads on web applications (https://gatling.io/).
+
+* **Artillery.io**: A modern, powerful, and easy-to-use load testing toolkit. It's used to test backend systems such as HTTP APIs, WebSocket services and more (https://artillery.io/). 
+
+* **K6**: An open-source load testing tool and SaaS for engineering teams. It's used to be developer-friendly with a strong on automation. It's also used to test APIs, microservices and websites (https://k6.io/).
+
+* **Locust**: An open-source load testing tool that allows to define user behavior with Python code, making it highly flexible and programmable. It is designed to create distributed and scalable load tests for web applications (https://locust.io/). One of the main advantages of Locust is that it's easy to use and can be used to create complex test scenarios.
+
+### Load Testing
+
+Conducting load testing on the system is essential to understand how it behaves under various levels of stress, particularly in terms of user load and I/O operations. Load testing helps indentify bottlenecks and limits of the system's capacity. 
+
+For this project, it was used **Locust** to conduct testing. The main reason for choosing Locust is that, first of all, it's open-source and free to use, and it's also easy to use and can be used to create complex test scenarios. Also the script can be written in Python, which is a language that is familiar to me. 
+
+Another appreciated feature of Locust is that provides a real-time web interface for starting tests, monitoring their progress, and viewving results. This interactive approach, from a personal point of view, is more intuitive and user-friendly than other tools. Then, during the research of the tools, it was found that Locust it's lightweight and doesn't demand extensive resources, making it efficient for various environments, including local machines for development or testing. So, at the end, it seems be the best choice for this project (also, it's seems to be the most appreciated tool in the community). 
+
+
+
+
+
+
+
+
+
 
 

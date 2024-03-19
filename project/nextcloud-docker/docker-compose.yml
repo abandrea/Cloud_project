@@ -1,10 +1,10 @@
-version: '3'
+version: '3.8'
 
 services:
   nextcloud:
     image: nextcloud
     ports:
-      - 8080:80
+      - "8080:80"
     volumes:
       - nextcloud:/var/www/html
     environment:
@@ -14,6 +14,15 @@ services:
       - MYSQL_PASSWORD=andf12
     depends_on:
       - db
+    ## Placeholder for scalability options in Swarm mode
+    deploy:
+      replicas: 1 # Change as needed for scaling
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    #networks: #just if you want to use a network
+    #  - net 
 
   db:
     image: mariadb
@@ -24,7 +33,51 @@ services:
       - MYSQL_USER=nextcloud
     volumes:
       - db:/var/lib/mysql
+    # Consider options for replication/clustering for scaling
+    #networks: #just if you want to use a network
+    #  - net 
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    # networks: #just if you want to use a network
+    #   - net
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=H#8@$rkBvFVj9t
+    ports:
+      - "3000:3000"
+    # networks: #just if you want to use a network
+    #   - net
+
+  node_exporter:
+    image: prom/node-exporter
+    ports:
+      - "9100:9100"
+
+
+  ## Placeholder for a caching service like Redis
+  # redis:
+  #   image: redis
+
+  ## Placeholder for a load balancer (e.g., Nginx or HAProxy)
+  # load_balancer:
+  #   image: nginx
 
 volumes:
   nextcloud:
   db:
+  grafana_data:
+
+## Placeholder just for network configurations
+# networks:
+#   network name:
+#     driver: bridge
+
