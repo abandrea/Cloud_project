@@ -4,7 +4,7 @@
 
 After choosing between Nextcloud and MinIO, it was planned the deployment on laptop in a containerized environment using Docker and Docker-Compose.
 
-### Install Docker and Docker-Compose
+## Install Docker and Docker-Compose
 
 First, it is necessary to install Docker and Docker-Compose. On MacOS, it is possible to install Docker Desktop, which includes Docker-Compose. (On Linux, it is needed to install Docker and Docker-Compose separately.)
 
@@ -25,7 +25,7 @@ Otherwise, it is possible to install Docker and Docker-Compose using Homebrew:
 brew install docker docker-compose
 ```
 
-### Create Docker-Compose File
+## Create Docker-Compose File
 
 After installing Docker and Docker-Compose, it is necessary to create a Docker-Compose file to define the services that will be used in the deployment. The Docker-Compose file is a YAML file that defines the services, networks, and volumes that will be used in the deployment.
 
@@ -141,7 +141,7 @@ The commands will remove the networks and volumes that were created.
 
 Once the containers are up and running, it is possible to access Nextcloud at `http://localhost:8080` in a web browser. The initial setup involves creating an admin account, choosing an username and  a strong password. 
 
-### Tests and Checks
+## Tests and Checks
 
 After the initial setup, it is possible to test the functionality of Nextcloud by uploading files, creating folders, and sharing files with others. It is also possible to install apps and plugins to extend the functionality of the service. Doing this can help to ensure that Nextcloud is working as expected and that it is ready to use. It also needed to check and make sure that Nextcloud is correclty connected to the database and that the data is being stored correctly.
 
@@ -162,11 +162,11 @@ General Maintenance tasks include:
 - Regularly update passwords and employ strong authentication methods. 
 - Performance tuning, such as adjusting php settings, fine-tuning database parameters, or scaling your Docker resources.
 
-## Scalability Aspects
+# Scalability Aspects
 
 What was done as far as deployment plan is just a starting point. As the number of users and the amount of data grows, it may be necessary to scale the deployment to handle the increased load. First of all, it is needed to analyse that there are two main approaches to scaling: horizontal and vertical scaling.
 
-### Horizontal vs. Vertical Scaling
+## Horizontal vs. Vertical Scaling
 
 - **Vertical Scaling**: This involves increasing the capacity and the power of the server by adding more resources (CPU, RAM, etc.) to the existing server. This is often done by upgrading the hardware of the server. This approach has its limitations, like physical and cost limits.
 
@@ -298,7 +298,7 @@ In this new version, it was included:
 - **Caching Mechanisms**: it was introduce a caching service (Redis) to cache frequently accessed data and reduce the load on the database.
 
 
-## Security Enhancements
+# Security Enhancements
 
 Security is a critical aspect of any deployment, especially when it comes to handling sensitive data. It was analysed to address some security enhancements that can be made to the deployment plan, such as secure file storage and transmission, user authentication, and unauthorized access prevention. 
 
@@ -379,7 +379,7 @@ services:
 
 After this step, it is possible to redeploy Docker environment using `docker-compose up -d`.
 
-### Ensuring Data Encryption 
+## Ensuring Data Encryption 
 
 Nextcloud provides server-side encryption to protect data. To enable server-side encryption, it is possible to go to the Nextcloud admin settings, in "Security" section, and enable the "Server-side encryption" option. This will encrypt the data stored in Nextcloud, and it will provide an extra layer of security.
 
@@ -412,7 +412,7 @@ Actually, with these implementation, the cost of the infrastructure in relative 
 
 For the project, it was considered the optimization of the container resources by setting resource limits, also to prevents over-allocations and under-utilization of resources. Also, it was considered the managing of docker volumes and images, to prevent the accumulation of unused data and to reduce the storage costs. Other project-related costs are network costs, especially in the cloud environment. Beyond the specific use of the project, the optimisation of data transfer processes is important in order to minimise data input and output costs.
 
-### Cost Efficiency Enhancements
+## Cost Efficiency Enhancements
 
 It is possible to consider some cost efficiency enhancements, such as:
 
@@ -424,7 +424,7 @@ It is possible to consider some cost efficiency enhancements, such as:
 Implementing these cost efficiency enhancements can help ensure that the cloud systema remains economically sustainable, especially as it scales up to handle increased load and data.
 
 
-## Returning to the Deployment Plan
+# Returning to the Deployment Plan
 
 The deployment plan was designed to deploy Nextcloud in a containerized environment using Docker and Docker-Compose. The plan included the installation of Docker and Docker-Compose, the creation of a Docker-Compose file to define the services, and the deployment of the services using Docker-Compose. The plan also included the initial setup of Nextcloud, the management and maintenance of the system, and the scalability aspects, it was considered security enhancements and cost efficiency.
 
@@ -434,7 +434,7 @@ The deployment plan was designed to be a **starting point**, and it was consider
 
 Actually, from the Docker Desktop setup, it was set up Resources and Advanced settings, and it was set up the Docker Desktop to use 4 CPUs and 8 GB of memory, with Swap of 1 GB (Swap means that if the system needs more memory resources and the RAM is full, inactive pages in memory are moved to the swap space), Virtual disk limit of 64 GB (Due to filesystem overhead, the real available space might be less).
 
-### Monitoring Tools
+## Monitoring Tools
 
 By default, the Docker Desktop includes a built-in monitoring tool that provides information about the containers, images, networks, and volumes. It is also possible to use third-party monitoring tools, such as Prometheus and Grafana, to monitor the system and to analyze the performance and resource usage.
 
@@ -557,7 +557,7 @@ In this project, it was created 3 dashboards:
 Obviously, is possible to adjust time ranges and other settings to suit specific requirements. After writing the query, Grafana will automatically execute it and display the results.
 
 
-## Stress Test - Testing the infrastructure
+# Stress Test - Testing the infrastructure
 
 For what concerns testing, it is possible to use a variety of tools and techniques to test the infrastructure. The test that was conducted was **load testing** and **performance testing**.
 
@@ -580,7 +580,7 @@ To do this test, there are several tools that can be used to conduct load testin
 
 * **Locust**: An open-source load testing tool that allows to define user behavior with Python code, making it highly flexible and programmable. It is designed to create distributed and scalable load tests for web applications (https://locust.io/). One of the main advantages of Locust is that it's easy to use and can be used to create complex test scenarios.
 
-### Load Testing
+## Load Testing
 
 Conducting load testing on the system is essential to understand how it behaves under various levels of stress, particularly in terms of user load and I/O operations. Load testing helps indentify bottlenecks and limits of the system's capacity. 
 
@@ -588,13 +588,202 @@ For this project, it was used **Locust** to conduct testing. The main reason for
 
 Another appreciated feature of Locust is that provides a real-time web interface for starting tests, monitoring their progress, and viewving results. This interactive approach, from a personal point of view, is more intuitive and user-friendly than other tools. Then, during the research of the tools, it was found that Locust it's lightweight and doesn't demand extensive resources, making it efficient for various environments, including local machines for development or testing. So, at the end, it seems be the best choice for this project (also, it's seems to be the most appreciated tool in the community). 
 
+First, is needed to have Locust installed. It can be done using pip:
+
+```bash
+pip install locust
+```
+
+### Define Testing Parameters
+
+Before starting the test, it is needed to define the testing parameters for load testing. The objective is to understand how the system behaves under different levels of stress in terms of user load and I/O operations.
+
+Is possible to do several tests:
+
+- **Concurrent Users**: Test the maximum number of users that the system can handle concurrently. This can be done by gradually increasing the number of concurrent users, starting with 50 and then increase to 100 and 200, and monitoring the system's response time and error rate;
+
+- **Hatch Rate**: Test the system's ability to handle a sudden increase in users. This can be done by gradually increasing the hatch rate, starting with 10 users per second and then increase to 20 and 30, and monitoring the system's response time and error rate;
+
+- **Types of Requests**: Test the system's ability to handle different types of requests, such as file uploads, file downloads, and file sharing. This can be done by simulating different types of requests and monitoring the system's response time and error rate, such as the time it takes to upload a file, the time it takes to download a file, and the time it takes to share a file.
+
+### Example of a Locust Test Script
+
+To use Locust, it is needed to create a test script that defines the user behavior and the tasks that the users will perform. The test script is written in Python. Here there is an example of a simple test script that simulates a user uploading a file to Nextcloud:
+
+```python
+from locust import HttpUser, task, between
+
+class QuickstartUser(HttpUser):
+    wait_time = between(5, 9)
+
+    @task
+    def upload_file(self):
+        self.client.post("/upload", files={"file": open("test.txt", "rb")})
+```
+
+This script defines a user that will upload a file to Nextcloud. The `wait_time` attribute is used to define the wait time between the tasks, and the `@task` decorator is used to define the task that the user will perform. The `self.client.post` method is used to send a POST request to the `/upload` endpoint with a file named `test.txt`.
+
+After configuring credentials (if needed), that can be done by sending a POST request to the login endpoint with the user's credentials, and then using the obtained session for subsequent requests, it is possible to run the test using the following command:
+
+```bash
+locust -f path/to/test_script.py 
+```
+
+This will start the Locust web interface at `http://localhost:8089`, where it is possible to start the test, monitor the progress, and view the results.
+
+**Example of Script for Load Testing Nextcloud**
+
+For the load testing of this project, it was created a test script that simulates a user uploading a file to Nextcloud, and then downloading the file. The script is written in Python and uses the Locust library to define the user behavior and the tasks that the users will perform. 
+
+This is an example of a test script that simulates a user uploading a file to Nextcloud and then downloading the file:
+
+```python
+from locust import HttpUser, task, between
+
+class NextcloudUser(HttpUser):
+    wait_time = between(5, 9)
+
+    def on_start(self):
+        self.login()
+
+    def login(self):
+        response = self.client.post("/login", data={"username": "user", "password": "password"})
+        if response.status_code != 200:
+            print("Login failed")
+
+    @task
+    def upload_file(self):
+        self.client.post("/upload", files={"file": open("test.txt", "rb")})
+
+    @task
+    def download_file(self):
+        self.client.get("/download/test.txt")
+```
+
+### Testing the Infrastructure
+
+For this project, it was created a bash file and a python file: 
+
+```bash
+#!/bin/bash
+
+# This script is used to test the nextcloud-docker project.
+
+# define some variables
+URL="http://localhost:8080/ocs/v1.php/cloud/users"
+USERNAME="ab_andrea"
+PASSWORD="H#8@$rkBvFVj9t"
+
+# Function to create users
+create_users() {
+  for i in {1..5}
+  do 
+    echo "Creating user user$i"
+    docker exec -u www-data -e OC_PASS="password$i" nextcloud-docker-nextcloud-1 php occ user:add --password-from-env "user$i"
+  done
+}
+
+# Function to delete users
+delete_users() {
+  for i in {1..5}
+  do 
+    echo "Deleting user: user$i"
+    docker exec -u www-data nextcloud-docker-nextcloud-1 php occ user:delete "user$i"
+  done
+}
+
+# create users
+create_users
+
+#Run the locust test
+locust -f test_two.py --host http://localhost:8080
+
+# cleanup
+echo "Cleaning up"
+delete_users
+
+echo "Test and cleanup complete."
+
+```
+
+```python
+import os
+from locust import HttpUser, task, between
+import random
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+class NextcloudUser(HttpUser):
+    wait_time = between(1, 5)
+
+    def on_start(self):
+        # Initialize user credentials
+        user_index = random.randint(1, 5)  # Randomly pick a user between user1 and user5
+        self.username = f"user{user_index}"
+        self.password = f"password{user_index}"
+        self.auth = (self.username, self.password)
+        self.login()
+
+    def login(self):
+        # Perform login for each user
+        self.client.post("/login", {
+            "user": self.username,
+            "password": self.password
+        })
+
+    @task(1)
+    def upload_file(self):
+        # Simulate file upload
+        with open( "test.txt", "rb") as file:
+            response = self.client.put(f"/remote.php/dav/files/{self.username}/test.txt", 
+                            data=file, 
+                            auth=self.auth)
+            logging.info(f"Upload Response: {response.status_code} - {response.text}")
+
+    @task(1)
+    def download_file(self):
+        # Simulate file download
+        response = self.client.get(f"/remote.php/dav/files/{self.username}/test.txt", 
+                        auth=self.auth)
+        logging.info(f"Download Response: {response.status_code} - {response.text}")
+
+
+# this test will simulate login, upload and download of a file
+```
+After running the test (`% ./test.sh`), it was possible to access the Locust web interface at `http://localhost:8089` in a web browser, and start the test, monitor the progress, and view the results.
+![test_1](image/test_1.png)
+
+From Logs, it was possible to see the response of the requests, and it was possible to see the response time and the error rate. 
+
+![test_1-2](image/bash_1.png)
+
+Let's analyse the results:
+
+- From **Upload Response** I've got a 201 status code, which indicates that file upload requests were successful. The HTTP 201 status code means "Created" and is a standard response for an HTTP POST request that results in the creation of a resource, in this case, a file. 
+
+- From **Download Responses** there is a mix of '404' and '200' status codes for file download requests:
+  
+    - The 404 status code means "Not Found," indicating that the requested file could not be found. This likely means that the download request was made for a file that either doesn't exist or wasn't successfully uploaded first.
+    - The 200 status code means "OK," which indicates a successful file download. The response body "_ _ _ TEST _ _ _" suggests that the content of the downloaded file is correct.
+
+- For **Response Times**, The logs don't give specific response times, but if you look at the charts from the Locust interface:
+
+  - The "Response Times" graph shows a trend in how long requests are taking. A significant increase in response time could indicate a performance bottleneck.
+  - The "Total Requests per Second" graph shows the throughput of your system — how many requests it's handling per second.
+
+- For **Error Rate** the statistics show an error rate, which is the ratio of failed requests to total requests. An error rate above 0% means some requests are failing.
+
+- The "Number of Users" graph shows the load ramp-up, which in this test has quickly reached the target number of users.
+
+So, for this easy test, it can be said that the system is correctly executing file upload operations, but there are some issues with file download operations. The 404 errors are likely due to a timing issue, where the download task is executed before the file is uploaded for certain users. Since tasks in Locust are executed asynchronously and independently for each user, there's no guarantee the the upload will always happen before the download for each user instance. 
+
+The importance of analyzing each results is to understand the system's behavior BUT also to go through the logs and understand the reasons behind the results and understand how to improve the system. For example, to address this specific issue, it can be develop some points:
+
+- Adjust Task Weights, to ensure that the upload task is always executed before the download task;
+- pre-upload the file for each user before starting the test, to ensure that the file is available for download;
+- Add a check to the download task to ensure that the file exists before attempting to download it.
 
 
 
-
-
-
-
-
-
-
+## Performance testing
