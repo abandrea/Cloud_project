@@ -1,12 +1,21 @@
 ---
+title: "Cloud Basic Project"
 output:
   pdf_document: default
   html_document: default
 ---
-# Project of Cloud Basic
 
-#  Tasks
-Identifying, deploying and implementing a cloud-based file storage system. The system should allow users to upload, download and delete files. Each user should have a private storage space. The system should be scalable, secure, and cost-efficient. It was suggested solutions to use for exam between Nextcloud (https://nextcloud.com/) and MinIO (https://min.io/).
+### Author
+Andrea Buscema
+
+Data Science and Artificial Intelligence
+
+University of Trieste
+
+andrea.buscema@studenti.units.it
+
+#  Tasks of the project
+The objective of this project is to identify, deploy and implement a cloud-based file storage system. The system must allow users to upload, download and delete files, with each user having a private storage space. The system must be scalable, secure and cost-efficient. A solution between Nextcloud (https://nextcloud.com/) and MinIO (https://min.io/) was suggested for consideration. 
 
 First of all, it's necessary to explain what are Nextcloud and MinIO: 
 
@@ -765,13 +774,13 @@ Let's analyse the results:
 
 - From **Download Responses** there is a mix of '404' and '200' status codes for file download requests:
   
-    - The 404 status code means "Not Found," indicating that the requested file could not be found. This likely means that the download request was made for a file that either doesn't exist or wasn't successfully uploaded first.
-    - The 200 status code means "OK," which indicates a successful file download. The response body "_ _ _ TEST _ _ _" suggests that the content of the downloaded file is correct.
+- * The 404 status code means "Not Found," indicating that the requested file could not be found. This likely means that the download request was made for a file that either doesn't exist or wasn't successfully uploaded first.
+- * The 200 status code means "OK," which indicates a successful file download. The response body "_ _ _ TEST _ _ _" suggests that the content of the downloaded file is correct.
 
 - For **Response Times**, The logs don't give specific response times, but if we look at the charts from the Locust interface:
 
-  - The "Response Times" graph shows a trend in how long requests are taking. A significant increase in response time could indicate a performance bottleneck.
-  - The "Total Requests per Second" graph shows the throughput of your system — how many requests it's handling per second.
+- * The "Response Times" graph shows a trend in how long requests are taking. A significant increase in response time could indicate a performance bottleneck.
+- * The "Total Requests per Second" graph shows the throughput of your system — how many requests it's handling per second.
 
 - For **Error Rate** the statistics show an error rate, which is the ratio of failed requests to total requests. An error rate above 0% means some requests are failing.
 
@@ -833,9 +842,9 @@ The test shows how well the system scales as more users are added. If the respon
 
 In the second test, it was continued to test the system's ability to handle an increasing number of users and loading files. As before, the test was conducted using the Locust tool to simulate different user traffic and to monitor the system's performance and resource usage using Grafana. Instead of the first test, in this case, it was tested the system to reach failures and to understand the system's performance limits and scalability issues.
 
-![test_2](test_2/grafana_2.png)
+![test_2](nextcloud-docker/test_2/grafana_2.png)
 
-![test_2](test_2/locust_2.png)
+![test_2](nextcloud-docker/test_2/locust_2.png)
 
 The test that was conducted is a stressed ramp-up test, in which not only the number of users was increased but also the time they are active. Thus, the server is being pushed to see how it handles the sustained load over a longer period. This test revealed that with the increase in the number of users and the prolonged duration of the test, the system starts to show malfunctions.
 
