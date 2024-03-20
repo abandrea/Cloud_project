@@ -785,5 +785,25 @@ The importance of analyzing each results is to understand the system's behavior 
 - Add a check to the download task to ensure that the file exists before attempting to download it.
 
 
-
 ## Performance testing
+
+Performance testing is used to determine how a system performs in terms of responsiveness and stability under a particular workload. It is used to identify performance bottlenecks and to ensure that the system meets the performance requirements. For this project, it was implemented a test script for testing the performance and scalability of the system under increasing load, using Locust for generating user traffic and Docker for managing the instances. 
+
+First, it was implemented for terminal execution and used Grafana to monitor system performance and resource usage. In this case, after defining `create_users()` and `delete_users()` (as seen before, just so as not to overload the system after testing), it was set up an incremental load testing loop, where the number of users was increased by 10 every 20 seconds, with a maximum of 100 users, so it starts with `INITIAL_USERS` and increases by `INCREMENT` every `INCREMENT_INTERVAL` seconds, until it reaches `MAX_USERS`. After each test iteration, there is a pause (`seep 10`) to allow the system to stabilize before the next iteration. 
+
+```bash
+# Incrementally run the load test
+current_users=$INITIAL_USERS
+while [ $current_users -le $MAX_USERS ]; do
+  echo "Running test with $current_users users..."
+  $LOCUST_CMD -u $current_users -r $HATCH_RATE --run-time $STEP_DURATION
+  
+  # Increase the number of users for the next increment
+  let current_users+=$USER_INCREMENT
+  
+  # Short delay to let the system stabilize before the next increment
+  echo "Waiting for system to stabilize..."
+  sleep 10
+done
+```
+And it was also implemented a test script for Locust, 

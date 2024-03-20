@@ -13,13 +13,13 @@ INITIAL_USERS=1
 USER_INCREMENT=10
 
 # Maximum number of users
-MAX_USERS=50
+MAX_USERS=100
 
 # Hatch rate (users spawned per second)
-HATCH_RATE=5
+HATCH_RATE=10
 
 # Duration for each step of the test
-STEP_DURATION="30s"
+STEP_DURATION="20s"
 
 # Locust command (without the number of users and hatch rate)
 LOCUST_CMD="locust -f $LOCUST_FILE --headless --host $HOST"
@@ -56,7 +56,7 @@ while [ $current_users -le $MAX_USERS ]; do
   
   # Short delay to let the system stabilize before the next increment
   echo "Waiting for system to stabilize..."
-  sleep 30
+  sleep 10
 done
 
 # cleanup
