@@ -1,24 +1,10 @@
-# Cloud_project
+# Cloud Project
 ## Project for cloud exam
 
-##  Taks
+##  Tasks
 Identifying, deploying and implementing a cloud-based file storage system. The system should allow users to upload, download and delete files. Each user should have a private storage space. The system should be scalable, secure, and cost-efficient.
 
-It was suggested solutions to use for exam between Nextcloud (https://nextcloud.com/) and MinIO (https://min.io/).
-
-First of all, it's necessary to explain what are Nextcloud and MinIO: 
-
-Nextcloud and MinIO are both cloud storage solutions, but they serve in different ways and have different features, which could influence the decision of choosing one versus the other. 
-
-### Nextcloud
-
-Nextcloud was primarily designed for file sharing and collaboration platform, if offers features like file synchronization, calendar, contacts, mail, and task management toold. It's often (and easily) seen as an alternative to services like Google Drive (https://www.google.com/drive/) or Dropbox (https://www.dropbox.com/), with a strong emphasis on **privacy and self-hosting**. It offers a wide range of features including end-to-end encryption, two-factor authentication, collaboration tools and integration with third-party applications. It's more user-friendly for non-technical users, for example it provides a web interface, desktop clients and mobile apps, making it accessible for a wide range of users. It's also easy to deploy for smaller to medium-sized installations (it can be scaled, but may require additional configuration and hardware for very large deployments). Lastly, has a large community and offers professional support services.
-
-### MinIO
-
-MinIO it's an high-performance, distributed object storage system desiged for large-scale private cloud infrastructures. It is API-compatible with Amazon S3, making it suitable for enterprises looking for a private or hybrid cloud storage solution. MinIO focuses ore on the storage aspect rather than collaboration tools. It's specialized and optimized for machine learning, analytics and application data, and offers features like erasure coding and bitrot protection for data integrity. Instead of Nextcloud, MinIO focuses more on API access and is typically managed via command line, though it does have a basic web interface for management tasks (that, from my personal opinion, it can be always appreciate). MinIO was deisgned for large-scale deployment from the start, easily scalable and can handle petabytes of data and high levels of throughput. Also, has a strong community support, with enterprise support available. It's often favored in enterprise environments with large-scale storage needs.
-
-### Choice and reason 
+## Choice of the solution
 
 Regarding project tasks, the first choice fell on Nextcloud. The reasons are:
 
@@ -29,33 +15,6 @@ Regarding project tasks, the first choice fell on Nextcloud. The reasons are:
 In contrast, in real world use with big data projects, where primary requirements is high-performance, scalable object storage, MinIO might be the more suitable choice. 
 
 Obviously, the decision depends on specific requirements, the scale of deployments and the features most important regards different kinds of projects/works.
-
-## Understanding Docker and docker Compose
-
-Docker (https://www.docker.com/) is a platform for developing, shipping and running apploications is isolated environments called containers. Containers package up an application with all its dependencies. 
-
-Docker Compose is a tool for defining and running multi-container Docker appications. With Compose, it will used a YAML file to configure applications's services, networks and volumes. 
-
-### How to create a Docker Compose
-
-To define services, like Nextcloud and its database and their configurations, is needed to create a 'docker-compose.yml' file. Then, is needed to define Nextcloud service and Database service (Nextcloud requires a database to store user data). 
-
-### Running Docke Compose file
-
-Use the command line to navigate to the directory containing the 'docker-compose.yml', run:
-
-`docker-compose up`
-
-This command pulls the necessary Docker images and starts the services defined in your compose file. Once the containers are running, it's possible to access Nextcloud through web browser at, i.e., `http://localhost:8080`.
-
-### Monitoring and Managing
-
-To monitor logs, it's possible use 
-
-`docker logs`
-
-Also, it's possible to use Docker Compose to start, stop, and restart services. It's possible to keep an eye on resource usage (CPU, memory) with Docker's built-in tools (or, it's possible also with external tools like Portainer).
-
 
 ## Documentation, Code and Presentation
 
