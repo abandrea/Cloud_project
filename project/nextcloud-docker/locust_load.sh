@@ -9,7 +9,7 @@ LOCUST_FILE="test_incr.py"
 
 # Function to create users
 create_users() {
-  for i in {1..10}
+  for i in {1..20}
   do 
     echo "Creating user user$i"
     docker exec -u www-data -e OC_PASS="password$i" nextcloud-docker-nextcloud-1 php occ user:add --password-from-env "user$i"
@@ -18,7 +18,7 @@ create_users() {
 
 # Function to delete users
 delete_users() {
-  for i in {1..10}
+  for i in {1..20}
   do 
     echo "Deleting user: user$i"
     docker exec -u www-data nextcloud-docker-nextcloud-1 php occ user:delete "user$i"

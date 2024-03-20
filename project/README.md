@@ -806,4 +806,57 @@ while [ $current_users -le $MAX_USERS ]; do
   sleep 10
 done
 ```
-And it was also implemented a test script for Locust, 
+Or, it can be implemented also to see the results in Locust web interface, where it is possible to see the response time, error rate, and other metrics in real-time (check the `locust_load.sh` and `test_incr.py` files).
+
+# Test conducted
+
+## Test 1
+
+The first test was conducted to test the system's ability to handle an increasing number of users and loading files. The test was conducted using the Locust tool to simulate different user traffic and to monitor the system's performance and resource usage using Grafana. 
+
+![test_1](test_1/grafana_1.png)
+
+![test_1](test_1/locust_1.png)
+
+So, the test was splitted in 4 parts, where progressively the number of users and the duration of the test with each run was increased. The test can be described as a type o ramp-up test, and it's designed to gradually increase the load on the system to observe hiw the system's performance metrics (like response times, error rates, etc.) change under increasing load. This is a common testing pattern to find out how the system behaves under escalating stress and to identify the performance limits and scalability issues. The purpose of this test is to:
+
+- Monitor how system performance metrics evolve as the load increases;
+- Determine at what point the system's performance starts to degrade;
+- Identify bottleneck and performance thresholds.
+
+### Observations and Comments
+
+The test shows how well the system scales as more users are added. If the response times remain low and the error rate doesn't increase significantly, it means the the system scales well. If not, it means that the system has reached its performance limits and that there are bottlenecks that need to be addressed.
+
+## Test 2
+
+In the second test, it was continued to test the system's ability to handle an increasing number of users and loading files. As before, the test was conducted using the Locust tool to simulate different user traffic and to monitor the system's performance and resource usage using Grafana. Instead of the first test, in this case, it was tested the system to reach failures and to understand the system's performance limits and scalability issues.
+
+![test_2](test_2/grafana_2.png)
+![test_2](test_2/locust_2.png)
+
+The test that was conducted is a stressed ramp-up test, in which not only the number of users was increased but also the time they are active. Thus, the server is being pushed to see how it handles the sustained load over a longer period. This test revealed that with the increase in the number of users and the prolonged duration of the test, the system starts to show malfunctions.
+
+### Observations and Comments
+
+- If we look at DiskI/O charts, we can see that operations have been increasing over time (like the first test). This is expected as more users are making more requests, leading to more read and write operations on the disk. 
+- The CPU Usage graph shows spikes that correlate with the testing intervals, this suggests that the CPU is under more load as more users are active.
+- The Memory Usage graph is relatively stable with a slight upward trend, and this is a good sign, indicating that memory is not a bottleneck at this stage.
+- In the Disk Utilization, the graph is fairly flat, which could imply that overall disk capacity is not being heavily used or that the metrix might not be capturing the write and delete operations effectively (keep in mind that that the file is small and the system is not under heavy load).
+- The Network Traffic seems negligible, which may suggest that network bandwidth is not a limiting factor during these tests.
+- There is a noticeable increase in response times as the number of users grows, with the 95th percentile response time showing significant spikes, indicating that while most requests are handled in a timely manner, a small percentage are taking much longer, which could point to intermittent performance issues or bottlenecks.
+- The failures recorded are for the DELETE method, which means that the server was unable to respond to the file deletion requests. This could be due to the server being overloaded, a configuration issuem, or a problem with how sessions are managed.
+
+## Last but not least
+
+
+In conclusion, the series of ramp-up tests conducted to assess the performance of the Nextcloud system under increasing loads have provided valuable insights into its scalability and reliability. Initial tests with 5 to 20 users for corresponding durations of 5 to 20 seconds showed the system's ability to handle incremental loads without significant degradation in performance. Metrics such as CPU usage, memory usage, and disk I/O scaled predictably with the increase in load. 
+
+However, when extending the duration to 30 seconds with a corresponding increase in the number of users, the system began to exhibit signs of stress. Specifically, we observed a 11% failure rate predominantly associated with DELETE operations, indicating potential issues with handling file deletion under sustained high loads. Additionally, response time metrics showed an increased latency, particularly at the 95th percentile, signaling that a subset of requests was experiencing considerable delays.
+
+Throughout the tests, CPU and memory utilization did not reach full saturation, suggesting that the bottlenecks may not be due to hardware resource limits but could be related to software configuration, session management, or specific application-level constraints. Notably, the network traffic remained consistently low, indicating that network bandwidth was not a limiting factor.
+
+The test results underscore the importance of fine-tuning server configurations, investigating application-level optimizations, and ensuring robust session management to improve overall system robustness. They also highlight the need for further analysis into the DELETE method failures to pinpoint the exact causes and implement the necessary fixes.
+
+In the context of these findings, the system demonstrates adequate performance up to a moderate number of simultaneous users but begins to falter as the load intensifies. This provides a clear directive for focused optimization and enhancement of the system's capacity to handle high-traffic scenarios, which is imperative for maintaining service quality and reliability as user demand escalates.
+
