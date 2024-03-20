@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Project of Cloud Basic
 
 #  Tasks
@@ -748,11 +753,11 @@ class NextcloudUser(HttpUser):
 ```
 After running the test (`./test.sh`), it was possible to access the Locust web interface at `http://localhost:8089` in a web browser, and start the test, monitor the progress, and view the results.
 
-![test_1](image/test_1.png)
+![test_1](nextcloud-docker/image/test_1.png)
 
 From Logs, it was possible to see the response of the requests, and it was possible to see the response time and the error rate. 
 
-![test_1-2](image/bash_1.png)
+![test_1-2](nextcloud-docker/image/bash_1.png)
 
 Let's analyse the results:
 
@@ -810,9 +815,9 @@ Or, it can be implemented also to see the results in Locust web interface, where
 
 The first test was conducted to test the system's ability to handle an increasing number of users and loading files. The test was conducted using the Locust tool to simulate different user traffic and to monitor the system's performance and resource usage using Grafana. 
 
-![test_1](test_1/grafana_1.png)
+![test_1](nextcloud-docker/test_1/grafana_1.png)
 
-![test_1](test_1/locust_1.png)
+![test_1](nextcloud-docker/test_1/locust_1.png)
 
 So, the test was splitted in 4 parts, where progressively the number of users and the duration of the test with each run was increased. The test can be described as a type o ramp-up test, and it's designed to gradually increase the load on the system to observe hiw the system's performance metrics (like response times, error rates, etc.) change under increasing load. This is a common testing pattern to find out how the system behaves under escalating stress and to identify the performance limits and scalability issues. The purpose of this test is to:
 
