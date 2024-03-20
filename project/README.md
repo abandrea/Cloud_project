@@ -1,6 +1,71 @@
 # Project of Cloud Basic
 
-## Deployment Plan using Docker and Docker-Compose
+#  Tasks
+Identifying, deploying and implementing a cloud-based file storage system. The system should allow users to upload, download and delete files. Each user should have a private storage space. The system should be scalable, secure, and cost-efficient. It was suggested solutions to use for exam between Nextcloud (https://nextcloud.com/) and MinIO (https://min.io/).
+
+First of all, it's necessary to explain what are Nextcloud and MinIO: 
+
+Nextcloud and MinIO are both cloud storage solutions, but they serve in different ways and have different features, which could influence the decision of choosing one versus the other. 
+
+### Nextcloud
+
+Nextcloud was primarily designed for file sharing and collaboration platform, if offers features like file synchronization, calendar, contacts, mail, and task management toold. It's often (and easily) seen as an alternative to services like Google Drive (https://www.google.com/drive/) or Dropbox (https://www.dropbox.com/), with a strong emphasis on **privacy and self-hosting**. It offers a wide range of features including end-to-end encryption, two-factor authentication, collaboration tools and integration with third-party applications. It's more user-friendly for non-technical users, for example it provides a web interface, desktop clients and mobile apps, making it accessible for a wide range of users. It's also easy to deploy for smaller to medium-sized installations (it can be scaled, but may require additional configuration and hardware for very large deployments). Lastly, has a large community and offers professional support services.
+
+### MinIO
+
+MinIO it's an high-performance, distributed object storage system desiged for large-scale private cloud infrastructures. It is API-compatible with Amazon S3, making it suitable for enterprises looking for a private or hybrid cloud storage solution. MinIO focuses ore on the storage aspect rather than collaboration tools. It's specialized and optimized for machine learning, analytics and application data, and offers features like erasure coding and bitrot protection for data integrity. Instead of Nextcloud, MinIO focuses more on API access and is typically managed via command line, though it does have a basic web interface for management tasks (that, from my personal opinion, it can be always appreciate). MinIO was deisgned for large-scale deployment from the start, easily scalable and can handle petabytes of data and high levels of throughput. Also, has a strong community support, with enterprise support available. It's often favored in enterprise environments with large-scale storage needs.
+
+## Choice and reason 
+
+Regarding project tasks, the first choice fell on Nextcloud. The reasons are:
+
+- file sharing and collaboration with user-friendly interface, including non-technical users;
+- strong privacy controls and open-source software;
+- small to medium-sized stogare needs and an easy-to-deploy solution.
+
+In contrast, in real world use with big data projects, where primary requirements is high-performance, scalable object storage, MinIO might be the more suitable choice. 
+
+Obviously, the decision depends on specific requirements, the scale of deployments and the features most important regards different kinds of projects/works.
+
+# Understanding Docker and docker Compose
+
+Docker (https://www.docker.com/) is a platform for developing, shipping and running apploications is isolated environments called containers. Containers package up an application with all its dependencies. 
+
+Docker Compose is a tool for defining and running multi-container Docker appications. With Compose, it will used a YAML file to configure applications's services, networks and volumes. 
+
+## How to create a Docker Compose
+
+To define services, like Nextcloud and its database and their configurations, is needed to create a 'docker-compose.yml' file. Then, is needed to define Nextcloud service and Database service (Nextcloud requires a database to store user data). 
+
+### Running Docke Compose file
+
+Use the command line to navigate to the directory containing the 'docker-compose.yml', run:
+
+`docker-compose up`
+
+This command pulls the necessary Docker images and starts the services defined in your compose file. Once the containers are running, it's possible to access Nextcloud through web browser at, i.e., `http://localhost:8080`.
+
+### Monitoring and Managing
+
+To monitor logs and containers, it's possible use 
+
+`docker logs`
+and 
+`docker ps`
+
+Also, it's possible to use Docker Desktop to start, stop, and restart services. It's possible to keep an eye on resource usage (CPU, memory) with Docker's built-in tools (or, it's possible also with external tools like Portainer).
+
+
+## Documentation, Code and Presentation
+
+In repository, will be available: 
+
+- Documentation where is explained and described the platform's architecture, including components, databases and their interactions, with a section on the security measures taken.
+- Docker files and any code developed/modified for the cloud-based file storage system, with a README file with instructions on how to deploy and use the system developed.
+- A short presentation summarizing the design and implementation.
+
+
+# Deployment Plan using Docker and Docker-Compose
 
 After choosing between Nextcloud and MinIO, it was planned the deployment on laptop in a containerized environment using Docker and Docker-Compose.
 
@@ -65,11 +130,11 @@ services:
 ```
 Here is where it's possible to include choosen file storage system, database service (if required), and any other necessary service.
 
-For what concerns database, it was used MariaDB, which is a community-developed fork of MySQL, and it is one of the most popular database servers in the world. It is included in the Docker-Compose file as a service, and it is linked to the Nextcloud service. The MariaDB service is defined with the image mariadb, and it is configured with the environment variables MYSQL_ROOT_PASSWORD, MYSQL_PASSWORD, MYSQL_DATABASE, and MYSQL_USER. The volumes section is used to define the volume that will be used to store the database data. The restart section is used to define the restart policy for the service. The command section is used to define the command that will be used to start the service. The links section is used to define the link between the MariaDB service and the Nextcloud service. 
+For what concerns database, it was used MariaDB, which is a community-developed fork of MySQL. It is included in the Docker-Compose file as a service, and it is linked to the Nextcloud service. The MariaDB service is defined with the image mariadb, and it is configured with the environment variables MYSQL_ROOT_PASSWORD, MYSQL_PASSWORD, MYSQL_DATABASE, and MYSQL_USER. The volumes section is used to define the volume that will be used to store the database data. The restart section is used to define the restart policy for the service. The command section is used to define the command that will be used to start the service. The links section is used to define the link between the MariaDB service and the Nextcloud service. 
 
 For what concerns Nextcloud, it is included in the Docker-Compose file as a service, and it is linked to the MariaDB service. The Nextcloud service is defined with the image nextcloud, and it is configured with the environment variables MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, and MYSQL_PASSWORD. The volumes section is used to define the volume that will be used to store the Nextcloud data. The restart section is used to define the restart policy for the service. The ports section is used to define the port that will be used to access the Nextcloud service. The links section is used to define the link between the Nextcloud service and the MariaDB service.
 
-### Deploy Services using Docker-Compose
+## Deploy Services using Docker-Compose
 
 After creating the Docker-Compose file, it is possible to deploy the services using Docker-Compose. To deploy the services, it is necessary to run the following command in the directory where the Docker-Compose file is located:
 
@@ -81,6 +146,7 @@ The command will start the services in the background, and it will create the ne
 
 ```bash
 docker logs
+docker ps
 ```
 
 The command will return the status of the services, and it will show if the services are running or not. If the services are running, it is possible to access the Nextcloud service using a web browser. The Nextcloud service can be accessed at the following URL:
@@ -95,11 +161,11 @@ What I used is Docker Desktop for MacOS. It's user friendly and easy to use. It'
 
 ## Explanation of the Deployment Plan with Docker and Docker-Compose
 
-Deploying Nextcloud with Docke Compose involves several steps, each focusing on creating an isolated yet interconnected environment where NExtcloud can operate with its required services.
+Deploying Nextcloud with Docker Compose involves some steps, each focusing on creating an isolated yet interconnected environment where Nextcloud can operate with its required services.
 
 ### Structure of Docker Compose File
 
-The file is structured in a specific format that docker Compose understands. It begins with a version declaration (version: '3') that specifies the version of the Compose file format. It then contains definitions for different sections, such as services, networks, and volumes. 
+The file is structured in a specific format that docker Compose understands. It begins with a version declaration (version: '3.8' for example) that specifies the version of the Compose file format. It then contains definitions for different sections, such as services, networks, and volumes. 
 
 ### Defining Services
 
@@ -108,11 +174,11 @@ The file is structured in a specific format that docker Compose understands. It 
 - **Nextcloud Service**: This is the main application service that runs the Nextcloud image. The `image` tag is used to specify the Nextcloud image. The `ports` section maps the ports of the container to your host machine, allowing to access Nextcloud via a web browser. The `links` tag is used to link this service to the database service, allowing Nextcloud to access the database. Environment variables can be set to configure the connection to the database (like database name, user, and password). The `volumes` tag is used for data persistance. Without this, all data stored in Nextcloud would be lost when the container is stopped. 
 
 
-## Accessing Nextcloud
+# Accessing Nextcloud
 
 After running the `docker-compose up -d` command, Nextcloud can be accessed at `http://localhost:8080` in a web browser. The initial setup involves creating an admin account and configuring the database settings. Once the setup is complete, Nextcloud is ready to use.
 
-In Docker Desktop, just easily click on the container and click on play button to start the container. It's also possible to view the logs of the services, and to stop and remove the services using the Docker Desktop interface.
+In Docker Desktop, just easily click on "Containers" and click on play button to start the container.
 
 To stop the services, it is possible to click on the stop button in the Docker Desktop interface, or to run the following command in the directory where the Docker-Compose file is located:
 
@@ -137,10 +203,6 @@ docker volume rm <volume_id>
 The commands will remove the networks and volumes that were created. 
 
 
-## Initial Setup of Nextcloud
-
-Once the containers are up and running, it is possible to access Nextcloud at `http://localhost:8080` in a web browser. The initial setup involves creating an admin account, choosing an username and  a strong password. 
-
 ## Tests and Checks
 
 After the initial setup, it is possible to test the functionality of Nextcloud by uploading files, creating folders, and sharing files with others. It is also possible to install apps and plugins to extend the functionality of the service. Doing this can help to ensure that Nextcloud is working as expected and that it is ready to use. It also needed to check and make sure that Nextcloud is correclty connected to the database and that the data is being stored correctly.
@@ -149,7 +211,7 @@ After the initial setup, it is possible to test the functionality of Nextcloud b
 
 This part is crucial for ensuring the long-term stability and security of the setup. 
 
-General management tasks include:
+General Management tasks include:
 - Regularly updating for both Nextcloud and the database;
 - Backup strategy, which includes regular backups of the database and Nextcloud data;
 - Regularly review user accounts and permissions to ensure that access levels are appropriate;
@@ -184,7 +246,7 @@ Since it is used MariaDB, it is possible to scale the database using techniques 
 
 ### Scalability Enhancements
 
-1.  **Service Replication**: Firstly, it was prepared 'nextcloud' for potential scaling. While Docker Compose itself isn't used for scaling in production, it was setting up to allows for an easier transition to tools like Docker Swarm or Kubernetes in the future. 
+1.  **Service Replication**: Firstly, it was prepared the system for potential scaling. While Docker Compose itself isn't used for scaling in production, it was setting up to allows for an easier transition to tools like Docker Swarm or Kubernetes in the future. 
 2.  **Database Scaling**: While actual database scaling won't be configured in Docker Compose, it is important to design with this in mind.  
 
 So, this is the updated version of docker-compose.yml incorporating these considerations:
@@ -230,66 +292,9 @@ volumes:
 
 Notes: 
 
-- The `replicas` key under `deploy` are a placeholder for scalability and they are used to specify the number of replicas for the service, but serves here as a reminder that for future scaling considerations.
+The `replicas` key under `deploy` are a placeholder for scalability and they are used to specify the number of replicas for the service, but serves here as a reminder that for future scaling considerations.
 
-- It was updated the version of the compose file to `3.8`, also if will decided to use Docker Swarm or Kubernetes in the future. 
-
-Also, it is possible to consider also Load Balancing and Caching Mechanisms to improve the performance and scalability of the system:
-
-```yaml
-
-version: '3.8'
-
-services:
-  nextcloud:
-    image: nextcloud
-    ports:
-      - "8080:80"
-    volumes:
-      - nextcloud:/var/www/html
-    environment:
-      - MYSQL_HOST=db
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=andf12
-    depends_on:
-      - db
-    ## Placeholder for scalability options in Swarm mode
-    deploy:
-      replicas: 1 # Change as needed for scaling
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-
-  db:
-    image: mariadb
-    environment:
-      - MYSQL_ROOT_PASSWORD=andf12
-      - MYSQL_PASSWORD=andf12
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-    volumes:
-      - db:/var/lib/mysql
-    # Consider options for replication/clustering for scaling
-
-  ## Placeholder for a caching service like Redis
-  # redis:
-  #   image: redis
-
-  ## Placeholder for a load balancer (e.g., Nginx or HAProxy)
-  # load_balancer:
-  #   image: nginx
-
-volumes:
-  nextcloud:
-  db:
-
-## Placeholder for network configurations
-# networks:
-#   - backend
-
-```
+Also, it is possible to consider Load Balancing and Caching Mechanisms to improve the performance and scalability of the system:
 
 In this new version, it was included:
 
@@ -302,16 +307,16 @@ In this new version, it was included:
 
 Security is a critical aspect of any deployment, especially when it comes to handling sensitive data. It was analysed to address some security enhancements that can be made to the deployment plan, such as secure file storage and transmission, user authentication, and unauthorized access prevention. 
 
-**Implementing Secure File Storage and Tasmission** 
+## Implementing Secure File Storage and Tasmission 
 
 It is important to ensure that files are stored and transmitted securely, especially when dealing with sensitive data. This can be achieved by configuring Nextcloud to use HTTPS for secure communication, and can be done by obtaining and installing an SSL/TLS certificate for NGINX (It is possible to use Let's Encrypt for a free certificate). 
 
-**Securing User Authentication**
+### Securing User Authentication
 
 Nextcloud uses a username and password for user athentication, but by default, it is possible to enhance the security of admin/users authentication using settings, that are available in the Nextcloud admin settings. 
 Also, it is possible to enhance the security of user authentication by integrating OAuth2/OpenID Connect for single sign-on (SSO) and multi-factor authentication (MFA) for an extra layer of security.
 
-**Preventing Unauthorized Access**
+### Preventing Unauthorized Access 
 
 It is important to prevent unauthorized access to the Nextcloud service. This can be achieved by implementing a firewall to restrict access to the Nextcloud service, and by regularly reviewing and updating security settings to ensure that the system is secure. It is also possible to use a Web Application Firewall (WAF) to protect against common web application attacks.
 
@@ -326,9 +331,7 @@ As mentioned, it is possible to use Let's Encrypt to obtain a free SSL certifica
 It is possible to create a self-signed SSL certificate using OpenSSL, that can be done by running the following command:
 
 ```bash
-
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
-
 ```
 
 This will create a self-signed SSL certificate and a private key file. The certificate will be valid for 365 days. The certificate file and the private key file can be used to configure NGINX to use HTTPS.
@@ -360,9 +363,7 @@ server {
 Then, after creating a directory (for example, `./nginx/ssl`) and placed the SSL certificate and key files, it is needed to adjust the Docker-Compose file to mount the SSL certificate and private key files into the NGINX container:
 
 ```yaml
-
 # ...
-
 services:
   load_balancer:
     image: nginx
@@ -373,7 +374,6 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl  # Mounting SSL directory
     # Rest of the configuration...
-
     #...
 ```
 
@@ -387,10 +387,9 @@ After enabling encryption, it is important to ensure that the encryption keys ar
 
 For these files that are already stored in Nextcloud before enabling encryption, it is needed to run a commando to encrypt them: `php occ encryption:encrypt-all`. 
 
+This enhancement, along with SSL/TLS for data in transit, greatly improves the overall security of the cloud system, and this is especially important when dealing with sensitive data, such as personal or financial information.
 
-Enabling encryption is a critical step for ensuring the confidentiality of the data that are stored in the cloud. This enhancement, along with SSL/TLS for data in transit, greatly improves the overall security of the cloud system, and this is especially important when dealing with sensitive data, such as personal or financial information.
-
-### Other Security Enhancements
+## Other Security Enhancements
 
 It is also possible to consider other security enhancements, such integrating OAuth2/OpenID Connect and multi-factor authentication (MFA) for an extra layer of security. 
 
@@ -402,7 +401,7 @@ Also, it is possible to consider using a Web Application Firewall (WAF) to prote
 
 As said before, it is important to regularly review and update Nextcloud, MariaDB, and the Docker images. Regularly updating the software will help to ensure that the system is secure and that it is protected against known vulnerabilities. It is also important to regularly review user accounts and permissions to ensure that access levels are appropriate, and to monitor disk usage and performance to ensure that the system is running smoothly.
 
-## Cost Efficiency
+# Cost Efficiency
 
 Cost efficiency is an important consideration when deploying a cloud system, especially when it comes to choosing the right infrastructure and services. It is important to consider the cost of the infrastructure, the cost of the services, and the cost of the maintenance and management of the system. 
 
@@ -434,47 +433,44 @@ The deployment plan was designed to be a **starting point**, and it was consider
 
 Actually, from the Docker Desktop setup, it was set up Resources and Advanced settings, and it was set up the Docker Desktop to use 4 CPUs and 8 GB of memory, with Swap of 1 GB (Swap means that if the system needs more memory resources and the RAM is full, inactive pages in memory are moved to the swap space), Virtual disk limit of 64 GB (Due to filesystem overhead, the real available space might be less).
 
-## Monitoring Tools
+# Monitoring Tools
 
 By default, the Docker Desktop includes a built-in monitoring tool that provides information about the containers, images, networks, and volumes. It is also possible to use third-party monitoring tools, such as Prometheus and Grafana, to monitor the system and to analyze the performance and resource usage.
 
-**Prometheus and Grafana**
+## Prometheus and Grafana
 
-Prometheus is an open-source monitoring and alerting toolkit that is designed for reliability and scalability. It is possible to use Prometheus to collect metrics from the Docker containers and to store them in a time-series database. Grafana is an open-source platform for monitoring and observability that is designed to visualize and analyze the metrics collected by Prometheus. It is possible to use Grafana to create dashboards and alerts to monitor the performance and resource usage of the system.
+Prometheus is an open-source monitoring and alerting toolkit that is designed for reliability and scalability. It is possible to use Prometheus to collect metrics from the Docker containers and to store them in a time-series database. 
 
-Adding both Prometheus and Grafana to a Docker implementation involves setting up containers for both applications and ensuring they are configured to work together. 
+Grafana is an open-source platform for monitoring and observability that is designed to visualize and analyze the metrics collected by Prometheus. It is possible to use Grafana to create dashboards and alerts to monitor the performance and resource usage of the system.
 
-Firstly, it is needed to create a Docker Network that will allow the containers to communicate with each other:
+For this project, it was added both Prometheus and Grafana to a Docker implementation.
+
+To do that, it is needed to create a Docker Network that will allow the containers to communicate with each other:
 
 ```bash
-
 docker network create monitoring
-
 ```
 
 Then, it was created a file named `prometheus.yml` to configure it to scrape metrics:
 
 ```yaml
-
 global:
   scrape_interval: 15s
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
-
 ```
-
 
 Run Prometheus in Docker:
 
 ```bash
 docker run -d --name=prometheus -p 9090:9090 --network=monitoring -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
-
 ```
-This command runs Prometheus in a detached mode, names the containe `prometheus`, exposes it on port 9090 and mounts the config file into the container.
+This command runs Prometheus in a detached mode, names the container `prometheus`, exposes it on port 9090 and mounts the configuration file into the container.
 
 Then, start Grafana:
+
 ```bash
 docker run -d --name=grafana -p 3000:3000 --network=monitoring grafana/grafana
 ```
@@ -502,7 +498,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=your_password  # Change this!
+      - GF_SECURITY_ADMIN_PASSWORD=your_password 
     ports:
       - "3000:3000"
     networks:
@@ -518,7 +514,7 @@ networks:
 
 This is a basic setup, and it is possible to add more advanced configurations and options to suit different requirements. 
 
-Nextcloud doesn't provide a Prometheus-compatible metrixs endopoint, so it is needed to use an additional plugin or exporter to collect metrics from Nextcloud. So, it was considered to use an exporter that can translate Nextcloud's status into Prometheus-readable metrics, simply by adding a new service to the docker-compose.yml file: 
+Nextcloud doesn't provide a Prometheus-compatible metrixs endpoint, it is needed to use an additional plugin or exporter to collect metrics from Nextcloud. So, it was considered to use an exporter that can translate Nextcloud's status into Prometheus-readable metrics, simply by adding a new service to the docker-compose.yml file: 
 
 ```yaml
 services: # ...
@@ -542,13 +538,13 @@ scarpe_configs:
       - targets: ['node_exporter:9100']
 ```
 
-From here, it is possible to access Prometheus at `http://localhost:9090` and Grafana at `http://localhost:3000` in a web browser. In Grafana it is possible to add Prometheus as a data source and create dashboards to visualize and analyze the metrics collected by Prometheus, from the panel configuration screen, using a query editor using PromQL (Prometheus Query Language) where is possible, for example, using `node_cpu_seconds_total` to see CPU usage. 
+From here, it is possible to access Prometheus at `http://localhost:9090` and Grafana at `http://localhost:3000` in a web browser. In Grafana it is possible to add Prometheus as a data source and create dashboards to visualize and analyse the metrics collected by Prometheus, from the panel configuration screen, using a query editor using PromQL (Prometheus Query Language) where is possible, for example, using `node_cpu_seconds_total` to see CPU usage.
 
 Grafana, as said before, offers various type of visualization like graphs, table, heatmaps, and more, where they are customizable. Once the dashboard is created and saved, it is possible to share it with others, and it is possible to set up alerts to be notified when certain conditions are met.
 
 Grafana has extensive documentation and a large community, there are also pre-built dashboards, experiment with different visualizations. 
 
-In this project, it was created 3 dashboards:
+In this project, it was firstly created 3 dashboards:
 
 - **CPU Usage**: `node_cpu_seconds_total{mode="system"}`;
 - **Memory Usage**: `node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes`;
@@ -556,14 +552,13 @@ In this project, it was created 3 dashboards:
 
 Obviously, is possible to adjust time ranges and other settings to suit specific requirements. After writing the query, Grafana will automatically execute it and display the results.
 
-
 # Stress Test - Testing the infrastructure
 
 For what concerns testing, it is possible to use a variety of tools and techniques to test the infrastructure. The test that was conducted was **load testing** and **performance testing**.
 
 The choice of tool often depends on the specific requirements of the test scenario (e.g. necessary protocols, level of realism, reporting capability), the budget (if available) and, of course, the skills of the owner/team.
 
-### Tools for testing 
+## Tools for testing 
 To do this test, there are several tools that can be used to conduct load testing:
 
 * **Apache JMeter**: Is a open-source tool designed for load testing and measuring performance. It's widely used for its versatility and can simulate heavy loads on servers, networks, or objects to test strength or analyse overall performance under different load types (https://jmeter.apache.org/). 
@@ -580,21 +575,21 @@ To do this test, there are several tools that can be used to conduct load testin
 
 * **Locust**: An open-source load testing tool that allows to define user behavior with Python code, making it highly flexible and programmable. It is designed to create distributed and scalable load tests for web applications (https://locust.io/). One of the main advantages of Locust is that it's easy to use and can be used to create complex test scenarios.
 
-## Load Testing
+## Testing
 
-Conducting load testing on the system is essential to understand how it behaves under various levels of stress, particularly in terms of user load and I/O operations. Load testing helps indentify bottlenecks and limits of the system's capacity. 
+Conducting testing on the system is essential to understand how it behaves under various levels of stress, particularly in terms of user load and I/O operations.
 
 For this project, it was used **Locust** to conduct testing. The main reason for choosing Locust is that, first of all, it's open-source and free to use, and it's also easy to use and can be used to create complex test scenarios. Also the script can be written in Python, which is a language that is familiar to me. 
 
 Another appreciated feature of Locust is that provides a real-time web interface for starting tests, monitoring their progress, and viewving results. This interactive approach, from a personal point of view, is more intuitive and user-friendly than other tools. Then, during the research of the tools, it was found that Locust it's lightweight and doesn't demand extensive resources, making it efficient for various environments, including local machines for development or testing. So, at the end, it seems be the best choice for this project (also, it's seems to be the most appreciated tool in the community). 
 
-First, is needed to have Locust installed. It can be done using pip:
+First, it is needed to have Locust installed. It can be done using pip:
 
 ```bash
 pip install locust
 ```
 
-### Define Testing Parameters
+## Define Testing Parameters
 
 Before starting the test, it is needed to define the testing parameters for load testing. The objective is to understand how the system behaves under different levels of stress in terms of user load and I/O operations.
 
@@ -608,7 +603,7 @@ Is possible to do several tests:
 
 ### Example of a Locust Test Script
 
-To use Locust, it is needed to create a test script that defines the user behavior and the tasks that the users will perform. The test script is written in Python. Here there is an example of a simple test script that simulates a user uploading a file to Nextcloud:
+To use Locust, it is needed to create a test script that defines the user behavior and the tasks that the users will perform. The test script is written in Python. Here there is an example of a simple test script that simulates a user uploading a text file to Nextcloud:
 
 ```python
 from locust import HttpUser, task, between
@@ -631,7 +626,7 @@ locust -f path/to/test_script.py
 
 This will start the Locust web interface at `http://localhost:8089`, where it is possible to start the test, monitor the progress, and view the results.
 
-**Example of Script for Load Testing Nextcloud**
+## Example of Script for Load Testing Nextcloud
 
 For the load testing of this project, it was created a test script that simulates a user uploading a file to Nextcloud, and then downloading the file. The script is written in Python and uses the Locust library to define the user behavior and the tasks that the users will perform. 
 
@@ -660,7 +655,7 @@ class NextcloudUser(HttpUser):
         self.client.get("/download/test.txt")
 ```
 
-### Testing the Infrastructure
+# Testing the Infrastructure
 
 For this project, it was created a bash file and a python file: 
 
@@ -751,7 +746,8 @@ class NextcloudUser(HttpUser):
 
 # this test will simulate login, upload and download of a file
 ```
-After running the test (`% ./test.sh`), it was possible to access the Locust web interface at `http://localhost:8089` in a web browser, and start the test, monitor the progress, and view the results.
+After running the test (`./test.sh`), it was possible to access the Locust web interface at `http://localhost:8089` in a web browser, and start the test, monitor the progress, and view the results.
+
 ![test_1](image/test_1.png)
 
 From Logs, it was possible to see the response of the requests, and it was possible to see the response time and the error rate. 
@@ -767,7 +763,7 @@ Let's analyse the results:
     - The 404 status code means "Not Found," indicating that the requested file could not be found. This likely means that the download request was made for a file that either doesn't exist or wasn't successfully uploaded first.
     - The 200 status code means "OK," which indicates a successful file download. The response body "_ _ _ TEST _ _ _" suggests that the content of the downloaded file is correct.
 
-- For **Response Times**, The logs don't give specific response times, but if you look at the charts from the Locust interface:
+- For **Response Times**, The logs don't give specific response times, but if we look at the charts from the Locust interface:
 
   - The "Response Times" graph shows a trend in how long requests are taking. A significant increase in response time could indicate a performance bottleneck.
   - The "Total Requests per Second" graph shows the throughput of your system — how many requests it's handling per second.
@@ -778,7 +774,7 @@ Let's analyse the results:
 
 So, for this easy test, it can be said that the system is correctly executing file upload operations, but there are some issues with file download operations. The 404 errors are likely due to a timing issue, where the download task is executed before the file is uploaded for certain users. Since tasks in Locust are executed asynchronously and independently for each user, there's no guarantee the the upload will always happen before the download for each user instance. 
 
-The importance of analyzing each results is to understand the system's behavior BUT also to go through the logs and understand the reasons behind the results and understand how to improve the system. For example, to address this specific issue, it can be develop some points:
+The importance of analysing each results is to understand the system's behavior BUT also to go through the logs and understand the reasons behind the results and understand how to improve the system. For example, to address this specific issue, it can be develop some points:
 
 - Adjust Task Weights, to ensure that the upload task is always executed before the download task;
 - pre-upload the file for each user before starting the test, to ensure that the file is available for download;
@@ -833,6 +829,7 @@ The test shows how well the system scales as more users are added. If the respon
 In the second test, it was continued to test the system's ability to handle an increasing number of users and loading files. As before, the test was conducted using the Locust tool to simulate different user traffic and to monitor the system's performance and resource usage using Grafana. Instead of the first test, in this case, it was tested the system to reach failures and to understand the system's performance limits and scalability issues.
 
 ![test_2](test_2/grafana_2.png)
+
 ![test_2](test_2/locust_2.png)
 
 The test that was conducted is a stressed ramp-up test, in which not only the number of users was increased but also the time they are active. Thus, the server is being pushed to see how it handles the sustained load over a longer period. This test revealed that with the increase in the number of users and the prolonged duration of the test, the system starts to show malfunctions.
