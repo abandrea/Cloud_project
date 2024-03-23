@@ -6,6 +6,8 @@
 # define some variables
 URL="http://localhost:8080"
 LOCUST_FILE="test_incr.py" 
+# Extra test file - it wasn't added to the report
+#LOCUST_FILE="extra.py"
 
 # Function to create users
 create_users() {
